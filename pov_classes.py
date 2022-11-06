@@ -133,21 +133,13 @@ class Sphere:
 
     def get_lines(self):
 
-        lines = []
+        lines = ['\nsphere']
         
-        lines.append('sphere')
-        
-        lines.append('{')
-        lines.append( pov_str_vector(self.center)+\
-                      ', ' + \
-                      str(self.radius))
-        
-        lines.append('texture')
-        lines.append('{')
-        lines.append(self.texture)
-        lines.append('}')
+        l = pov_str_vector(self.center) + ', ' + str(self.radius)
+        texture_lines = ['texture']+ c_brackets([self.texture])
+        sphere_lines = c_brackets([l] + c_brackets(texture_lines))
 
-        lines.append('}')
+        lines += sphere_lines 
 
         return lines
 
@@ -162,8 +154,8 @@ class Box:
         self.texture = texture
     
     def get_lines(self):
-        print('Getting lines for box')
-        lines = ['box']
+
+        lines = ['\nbox']
         
         lines.append('{')
         
@@ -180,8 +172,8 @@ class Box:
 
 def pov_str_vector(vector):
     pov_str = '<'+ \
-              str(vector[0]) + ',' + \
-              str(vector[1]) + ',' + \
+              str(vector[0]) + ', ' + \
+              str(vector[1]) + ', ' + \
               str(vector[2]) +'>'
     return pov_str
 
