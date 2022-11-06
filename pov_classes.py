@@ -14,6 +14,9 @@ class Scene:
     def add_sphere(self, sphere):
         self.objects.append(sphere)
     
+    def add_box(self, box):
+        self.objects.append(box)
+
     def display(self):
 
         print ('Camera')
@@ -48,12 +51,11 @@ class Scene:
         lines.append('\n// Lights \n')
         for light in self.lights:
             lines += light.get_lines()
-
+        
         # Add objects info
         lines.append('\n// Objects \n')
         for object in self.objects:
             lines += object.get_lines()
-
 
         # Put it all together
         content = '\n'.join(lines)
@@ -69,6 +71,7 @@ class Scene:
         
         return
 
+
 class Camera:
     
     def __init__(self, location=(0,1,-2), look_at=(0,0,0)):
@@ -82,14 +85,14 @@ class Camera:
 
     def get_lines(self):
         
-        lines = []
+        lines = ['camera']
         
-        lines.append('camera {')
-        lines.append('location '+ pov_str_vector(self.location))
-        lines.append('look_at '+ pov_str_vector(self.look_at))
-        lines.append('}')
+        l1 = 'location '+ pov_str_vector(self.location)
+        l2 = 'look_at '+ pov_str_vector(self.look_at)
+        lines += c_brackets([l1,l2])
 
         return lines
+
 
 class Light:
     
@@ -104,17 +107,19 @@ class Light:
 
     def get_lines(self):
         
-        lines = []
-        
-        lines.append('light_source {')
-        lines.append( pov_str_vector(self.location)+' color White')
-        lines.append('}')
+        lines = ['light_source']
+        l1 = pov_str_vector(self.location)+' color White'
+        lines += c_brackets([l1])
 
         return lines
 
+
 class Sphere:
     
-    def __init__(self, center=(0,0,0), radius=1, texture='pigment { color Red }'):
+    def __init__(self, 
+                 center=(0,0,0), 
+                 radius=1, 
+                 texture='pigment { color Red }'):
         self.center = center
         self.radius = radius
         self.texture = texture
@@ -127,14 +132,18 @@ class Sphere:
         print()
 
     def get_lines(self):
-        
+
         lines = []
         
-        lines.append('sphere {')
+        lines.append('sphere')
+        
+        lines.append('{')
         lines.append( pov_str_vector(self.center)+\
                       ', ' + \
                       str(self.radius))
-        lines.append('texture {')
+        
+        lines.append('texture')
+        lines.append('{')
         lines.append(self.texture)
         lines.append('}')
 
@@ -142,9 +151,40 @@ class Sphere:
 
         return lines
 
+
+class Box:
+    def __init__(self, 
+                 near_lower_left=(1,0,0),
+                 far_upper_right=(-1,1,1),
+                 texture = 'pigment {color Red}'):
+        self.near_lower_left = near_lower_left
+        self.far_upper_right = far_upper_right
+        self.texture = texture
+    
+    def get_lines(self):
+        print('Getting lines for box')
+        lines = ['box']
+        
+        lines.append('{')
+        
+        lines.append( pov_str_vector(self.near_lower_left)+',')
+        lines.append( pov_str_vector(self.far_upper_right))
+        
+        l_texture= ['texture']+ c_brackets([self.texture])
+        lines += l_texture
+
+        lines.append('}')
+
+        return lines
+
+
 def pov_str_vector(vector):
     pov_str = '<'+ \
               str(vector[0]) + ',' + \
               str(vector[1]) + ',' + \
               str(vector[2]) +'>'
     return pov_str
+
+
+def c_brackets(lines):
+    return ['\t{']+ ['\t'+line for line in lines] + ['\t}']
