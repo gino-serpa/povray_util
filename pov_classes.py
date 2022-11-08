@@ -17,6 +17,9 @@ class Scene:
     def add_box(self, box):
         self.objects.append(box)
 
+    def add_cone(self, cone):
+        self.objects.append(cone)
+
     def display(self):
 
         print ('Camera')
@@ -123,7 +126,8 @@ class Sphere:
         self.center = center
         self.radius = radius
         self.texture = texture
-        
+
+
     def display(self):
         print('Sphere')
         print('\t', 'center: ', self.center)
@@ -131,17 +135,18 @@ class Sphere:
         print('\t','texture: ', self.texture)
         print()
 
+
     def get_lines(self):
 
-        lines = ['\nsphere']
+        sphere_def = ['\nsphere']
         
-        l = pov_str_vector(self.center) + ', ' + str(self.radius)
-        texture_lines = ['texture']+ c_brackets([self.texture])
-        sphere_lines = c_brackets([l] + c_brackets(texture_lines))
+        sphere_prop = [pov_str_vector(self.center) +\
+                      ', ' + str(self.radius)]
+        texture_def = ['texture']+ c_brackets([self.texture])
 
-        lines += sphere_lines 
+        sphere_def +=  c_brackets(sphere_prop + texture_def)
 
-        return lines
+        return sphere_def
 
 
 class Box:
@@ -169,6 +174,36 @@ class Box:
 
         return lines
 
+
+class Cone:
+    def __init__(self, 
+                 center_top = (0,0,0),
+                 radius_top = 1,
+                 center_bottom = (0,0,1),
+                 radius_bottom = 2,
+                 texture = 'pigment {color Red}'):
+        self.center_top = center_top
+        self.radius_top = radius_top
+        self.center_bottom = center_bottom
+        self.radius_bottom = radius_bottom
+        self.texture = texture
+
+
+    def get_lines(self):
+        
+        center_radius_top = [pov_str_vector(self.center_top)\
+                             +', '+ str(self.radius_top)]
+        center_radius_bottom = [pov_str_vector(self.center_bottom)\
+                             +', '+ str(self.radius_bottom)]
+        cone_properties = center_radius_top + center_radius_bottom
+
+        texture_def = ['texture'] + c_brackets([self.texture])
+        cone_properties += texture_def
+
+        cone_def = ['cone'] + c_brackets(cone_properties) 
+
+        return cone_def
+    
 
 def pov_str_vector(vector):
     pov_str = '<'+ \
