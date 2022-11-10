@@ -9,14 +9,12 @@ camera
 	look_at <0, 1, 2>
 	}
 
-
 // Lights 
 
 light_source
 	{
 	<2, 4, -3> color White
 	}
-
 
 // Objects 
 
@@ -47,16 +45,14 @@ sphere
 		pigment { color Yellow }
 		}
 	}
-
 box
-{
-<1, 0, 0>,
-<-1, 1, 1>
-texture
 	{
-	pigment {color Red}
+	<1, 0, 0>, <-1, 1, 1>
+	texture
+		{
+		pigment {color Red}
+		}
 	}
-}
 cone
 	{
 	<0, 0, 0>, 1

@@ -7,36 +7,12 @@ class Scene:
         
     def add_camera(self, camera):
         self.camera = camera
-
+    
     def add_light(self, light):
         self.lights.append(light)
-        
-    def add_sphere(self, sphere):
-        self.objects.append(sphere)
-    
-    def add_box(self, box):
-        self.objects.append(box)
 
-    def add_cone(self, cone):
-        self.objects.append(cone)
-
-    def display(self):
-
-        print ('Camera')
-        camera = self.camera
-
-        if camera==None:
-            print('No camera defined')
-        else:
-            camera.display()
-        
-        print('Lights')
-        for light in self.lights:
-            light.display()
-            
-        print('Objects')
-        for object in self.objects:
-            object.display()
+    def add_object(self, object):
+        self.objects.append(object)
 
     def generate_pov_content(self):
         
@@ -74,17 +50,14 @@ class Scene:
         
         return
 
+class Object:
+    pass
 
 class Camera:
     
     def __init__(self, location=(0,1,-2), look_at=(0,0,0)):
         self.location = location
         self.look_at = look_at
-    
-    def display(self):
-        print('\t','Location: ', self.location)
-        print('\t','Look at: ', self.look_at)
-        print()
 
     def get_lines(self):
         
@@ -102,11 +75,6 @@ class Light:
     def __init__(self, location=(2,4,-3), color='White'):
         self.location = location
         self.color = color
-    
-    def display(self):
-        print('\t','location: ', self.location)
-        print('\t','color: ', self.color)
-        print()
 
     def get_lines(self):
         
@@ -117,7 +85,7 @@ class Light:
         return lines
 
 
-class Sphere:
+class Sphere(Object):
     
     def __init__(self, 
                  center=(0,0,0), 
@@ -126,15 +94,6 @@ class Sphere:
         self.center = center
         self.radius = radius
         self.texture = texture
-
-
-    def display(self):
-        print('Sphere')
-        print('\t', 'center: ', self.center)
-        print('\t','radius: ', self.radius)
-        print('\t','texture: ', self.texture)
-        print()
-
 
     def get_lines(self):
 
@@ -149,7 +108,7 @@ class Sphere:
         return sphere_def
 
 
-class Box:
+class Box(Object):
     def __init__(self, 
                  near_lower_left=(1,0,0),
                  far_upper_right=(-1,1,1),
@@ -159,23 +118,20 @@ class Box:
         self.texture = texture
     
     def get_lines(self):
-
-        lines = ['\nbox']
         
-        lines.append('{')
+        near_l_l = pov_str_vector(self.near_lower_left)
+        far_u_r = pov_str_vector(self.far_upper_right)
+        corners = [', '.join([near_l_l,far_u_r])]
         
-        lines.append( pov_str_vector(self.near_lower_left)+',')
-        lines.append( pov_str_vector(self.far_upper_right))
-        
-        l_texture= ['texture']+ c_brackets([self.texture])
-        lines += l_texture
+        texture= ['texture']+ c_brackets([self.texture])
+    
 
-        lines.append('}')
+        box_def = ['box']+c_brackets(corners + texture)
 
-        return lines
+        return box_def
 
 
-class Cone:
+class Cone(Object):
     def __init__(self, 
                  center_top = (0,0,0),
                  radius_top = 1,
@@ -204,7 +160,7 @@ class Cone:
 
         return cone_def
     
-
+# functions
 def pov_str_vector(vector):
     pov_str = '<'+ \
               str(vector[0]) + ', ' + \
